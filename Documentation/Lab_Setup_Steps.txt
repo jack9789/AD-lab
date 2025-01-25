@@ -15,15 +15,21 @@ File Server (SRV1)
 
 Hostname: SRV1
 IP Address: 192.168.2.20
+
 Role: Configured as a file server with shared folders accessible to domain users.
+
 Windows Clients (CLIENT01 & CLIENT02)
 
 IP Addresses: Dynamically assigned via DHCP.
+
 Role: Domain-joined clients for testing GPOs and file share access.
+
 Linux Client (LINUX01)
 
 IP Address: Dynamically assigned via DHCP.
+
 Role: Simulates cross-platform compatibility and domain authentication.
+
 Admin PC
 
 IP Address: 192.168.1.10
@@ -32,11 +38,13 @@ Network Diagram
 Refer to the diagram provided for a visual representation of the network setup.
 
 Setup Steps
+
 1️⃣ Configure PfSense
 Assign LAN and WAN interfaces.
 Set LAN IP to 192.168.2.1.
 Configure NAT to allow internet access.
 Set up DNS forwarders to ensure AD DNS queries resolve.
+
 2️⃣ Configure Active Directory (AD01)
 Install Active Directory Domain Services (AD DS).
 Promote AD01 as the primary Domain Controller for jack.local.
@@ -46,11 +54,13 @@ Install and configure DHCP:
 Define a scope (192.168.2.50 - 192.168.2.100).
 Set the default gateway to 192.168.2.1.
 Set DNS server to 192.168.2.10.
+
 3️⃣ Configure File Server (SRV1)
 Add SRV1 to the domain jack.local.
 Configure shared folder Public:
 Path: C:\Public.
 Permissions: Allow read/write access to all domain users.
+
 4️⃣ Configure Clients
 Windows Clients:
 Join the jack.local domain.
@@ -62,6 +72,7 @@ bash
 Copy
 sudo realm join jack.local -U Administrator
 Test domain user authentication.
+
 5️⃣ Configure Group Policy Objects (GPOs)
 Create a GPO to map the shared folder as a network drive:
 Drive Letter: Z:
