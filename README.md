@@ -19,4 +19,4 @@ This repository contains a guide to setting up an AD lab environment using VMwar
 | Admin PC      | RDP to AD Server | RDP to AD Server              |
 
 ## 📖 Setup Instructions
-See the [Lab Setup Steps](Documentation/Lab_Setup_Steps.md) for a detailed guide.
+See the [Lab Setup Steps](Documentation/Lab_Setup_Steps.txt) for a detailed guide.
