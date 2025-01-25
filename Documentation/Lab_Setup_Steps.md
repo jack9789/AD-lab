@@ -1,103 +1,73 @@
-# Active Directory Home Lab Setup
+Lab Objective
+The purpose of this lab is to set up a small network environment for practicing system administration tasks. The lab consists of essential components such as Active Directory, DNS, DHCP, file sharing, and client-server communication. It is designed to simulate real-world scenarios for IT professionals to practice and enhance their skills.
 
-## Overview
-This document details the setup of an Active Directory (AD) home lab using VMware Workstation. The lab includes a pfSense firewall, an Active Directory Domain Controller, a file server, Windows clients, and a Linux client.
+Lab Components
+PfSense Firewall
 
-## Lab Topology
-```
-                 Internet
-                     │
-                 Router
-                     │
-               pfSense Firewall
-               (192.168.2.1)
-                     │
-    ┌───────────────┴───────────────┐
-    │                               │
- Active Directory Server         SRV1 (File Server)
- (192.168.2.10)                  (192.168.2.20)
-    │                               │
- ┌───────────────┬───────────────┐
- │               │               │
-Win Client 1   Win Client 2   Linux Client
-```
+IP Address: 192.168.2.1
+Role: Provides network routing, NAT, and internet access for the lab.
+Active Directory Server (AD01)
 
-## Virtual Machines
-| VM Name           | Role                 | OS                  | IP Address    |
-|------------------|---------------------|---------------------|--------------|
-| pfSense          | Firewall/Gateway    | pfSense             | 192.168.2.1  |
-| AD Server        | Domain Controller   | Windows Server 2019 | 192.168.2.10 |
-| SRV1             | File Server         | Windows Server 2019 | 192.168.2.20 |
-| Windows Client 1 | Workstation         | Windows 10          | DHCP         |
-| Windows Client 2 | Workstation         | Windows 10          | DHCP         |
-| Linux Client     | Workstation         | Ubuntu              | DHCP         |
+Hostname: AD01
+IP Address: 192.168.2.10
+Role: Primary Domain Controller for jack.local domain. Configured with DNS and DHCP.
+File Server (SRV1)
 
-## Setup Steps
+Hostname: SRV1
+IP Address: 192.168.2.20
+Role: Configured as a file server with shared folders accessible to domain users.
+Windows Clients (CLIENT01 & CLIENT02)
 
-### 1. **Install pfSense as Firewall**
-- Assign **WAN** (Bridged to Router) and **LAN** (192.168.2.1/24)
-- Enable **DHCP on LAN** (to distribute IPs to clients)
-- Set **DNS Forwarding** to use AD DNS
+IP Addresses: Dynamically assigned via DHCP.
+Role: Domain-joined clients for testing GPOs and file share access.
+Linux Client (LINUX01)
 
-### 2. **Install & Configure Active Directory Server**
-- Install Windows Server 2019
-- Assign static IP **192.168.2.10**
-- Install **Active Directory Domain Services (AD DS)**
-- Promote Server to **Domain Controller** (Domain: `jack.local`)
-- Configure **DNS** to forward to pfSense
-- Configure **DHCP Server** for automatic client IP assignment
+IP Address: Dynamically assigned via DHCP.
+Role: Simulates cross-platform compatibility and domain authentication.
+Admin PC
 
-### 3. **Configure SRV1 as File Server**
-- Assign static IP **192.168.2.20**
-- Install **File Server Role**
-- Create a shared folder `\srv1\public` with domain user access
+IP Address: 192.168.1.10
+Role: Used to remotely manage the lab environment, including Active Directory and PfSense.
+Network Diagram
+Refer to the diagram provided for a visual representation of the network setup.
 
-### 4. **Join Clients to AD Domain**
-#### Windows Clients:
-1. Set DNS to **192.168.2.10**
-2. Join domain via **System Properties → Change Settings → Domain: `jack.local`**
-3. Restart and log in with **domain credentials**
-
-#### Linux Client (Ubuntu):
-```bash
-sudo apt update && sudo apt install -y realmd sssd adcli
+Setup Steps
+1️⃣ Configure PfSense
+Assign LAN and WAN interfaces.
+Set LAN IP to 192.168.2.1.
+Configure NAT to allow internet access.
+Set up DNS forwarders to ensure AD DNS queries resolve.
+2️⃣ Configure Active Directory (AD01)
+Install Active Directory Domain Services (AD DS).
+Promote AD01 as the primary Domain Controller for jack.local.
+Configure DNS:
+Set forwarders to PfSense (192.168.2.1).
+Install and configure DHCP:
+Define a scope (192.168.2.50 - 192.168.2.100).
+Set the default gateway to 192.168.2.1.
+Set DNS server to 192.168.2.10.
+3️⃣ Configure File Server (SRV1)
+Add SRV1 to the domain jack.local.
+Configure shared folder Public:
+Path: C:\Public.
+Permissions: Allow read/write access to all domain users.
+4️⃣ Configure Clients
+Windows Clients:
+Join the jack.local domain.
+Verify GPO and shared folder access.
+Linux Client:
+Install necessary tools (realmd, sssd, etc.).
+Join jack.local domain using:
+bash
+Copy
 sudo realm join jack.local -U Administrator
-```
-
-### 5. **Group Policy Management**
-- Configure a **GPO** to map `\srv1\public` as `Z:` drive for all domain users:
-  1. Open **Group Policy Management**
-  2. Create a new **GPO: "Map Public Drive"**
-  3. Go to **User Configuration → Preferences → Drive Maps**
-  4. New Drive Map → Path: `\srv1\public` → Assign letter `Z:`
-  5. Link GPO to **domain users OU**
-
-### 6. **Testing & Verification**
-- Check domain join with:
-  ```powershell
-  Get-ADComputer -Filter *
-  ```
-- Test file server access from Windows clients:
-  ```cmd
-  net use Z: \\srv1\public
-  ```
-- Test Linux access:
-  ```bash
-  smbclient -L //srv1 -U DOMAIN\User
-  ```
-
-## Additional Enhancements
-- Implement **Remote Desktop (RDP) for Admin PC**
-- Automate **GPO Export & Backup** with PowerShell
-- Document all configurations in a GitHub repository
-
-## Summary
-This lab simulates a **corporate IT infrastructure** with:
-✅ **Active Directory for centralized authentication**
-✅ **pfSense as a firewall & network manager**
-✅ **File server for shared access across domain users**
-✅ **Windows & Linux client domain integration**
-
-This setup provides practical hands-on experience for **System Administration & Cybersecurity** roles.
-
-
+Test domain user authentication.
+5️⃣ Configure Group Policy Objects (GPOs)
+Create a GPO to map the shared folder as a network drive:
+Drive Letter: Z:
+Path: \\SRV1\Public.
+Testing and Validation
+Ensure all clients receive IPs via DHCP.
+Verify domain authentication on all machines.
+Test file access from both Windows and Linux clients.
+Test RDP access to servers.
