@@ -16,7 +16,7 @@ This repository contains a guide to setting up an AD lab environment using VMwar
 | SRV1          | 192.168.2.20     | File Server                   |
 | Windows Clients | DHCP Assigned  | Domain-Joined Workstations    |
 | Linux Client  | DHCP Assigned    | Ubuntu Client (AD Integrated) |
-| Admin PC      | RDP to AD Server | RDP to AD Server              |
+| Admin PC      | 192.168.1.1      | Splunk server and pfsense admin|
 
 ## 📖 Setup Instructions
 See the [Lab Setup Steps](Documentation/Lab_Setup_Steps.txt) for a detailed guide.
