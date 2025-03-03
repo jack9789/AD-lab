@@ -1,0 +1,19 @@
+- name: Create and configure security GPO
+  hosts: windows
+  tasks:
+    - name: Create a new GPO
+      win_shell: |
+        New-GPO -Name "SecurityGPO" -Comment "Enforcing security settings"
+
+    - name: Set password policy (Minimum password length to 12)
+      win_shell: |
+        Set-GPRegistryValue -Name "SecurityGPO" -Key "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -ValueName "MinimumPasswordLength" -Type DWORD -Value 12
+
+    - name: Disable Guest account
+      win_shell: |
+        Set-GPRegistryValue -Name "SecurityGPO" -Key "HKLM\SAM\SAM\Domains\Account\Users\00000201" -ValueName "F" -Type Binary -Value 0000
+
+    - name: Link GPO to domain
+      win_shell: |
+        New-GPLink -Name "SecurityGPO" -Target "ou=Domain Users,ou=jack.local,dc=jack,dc=local" -Enforced Yes
+        
